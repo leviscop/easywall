@@ -22,7 +22,7 @@ function run {
 
 flag_file="/times_ran"
 count=1
-if [ -f "$flag_file" -eq 1 ]; then
+if [ ! -f "$flag_file" ]; then
     install
 else
     count=$(cat $flag_file)
