@@ -32,7 +32,6 @@ mkdir -pv "${BUILD_DIR}/opt/$PACKAGE/config/"
 cp -rav config/*.sample.ini "${BUILD_DIR}"/opt/$PACKAGE/config/
 cp -rav docs "${BUILD_DIR}"/opt/$PACKAGE/
 cp -rav scripts "${BUILD_DIR}"/opt/$PACKAGE/
-cp -rav ssl "${BUILD_DIR}"/opt/$PACKAGE/
 cp -rav .version "${BUILD_DIR}"/opt/$PACKAGE/
 cp -rav requirements.txt "${BUILD_DIR}"/opt/$PACKAGE/
 cp -rav setup* "${BUILD_DIR}"/opt/$PACKAGE/

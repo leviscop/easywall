@@ -2,7 +2,6 @@
 
 CONFIGFOLDER="config"
 RULESFOLDER="rules"
-SSLFOLDER="ssl"
 BACKUPFOLDER="backup"
 WEB_CONFIG_FILE="web.ini"
 CORE_CONFIG_FILE="easywall.ini"
@@ -67,8 +66,6 @@ mkdir -p "${NEWPATH}/${BACKUPFOLDER}/"
 cp -av "${OLDPATH}"/${BACKUPFOLDER}/* "${NEWPATH}/${BACKUPFOLDER}/"
 mkdir -p "${NEWPATH}/${RULESFOLDER}/"
 cp -avr "${OLDPATH}"/${RULESFOLDER}/* "${NEWPATH}/${RULESFOLDER}/"
-mkdir -p "${NEWPATH}/${SSLFOLDER}/"
-cp -av "${OLDPATH}"/${SSLFOLDER}/* "${NEWPATH}/${SSLFOLDER}/"
 
 # Step 7
 echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m the services are stopped \\e[39m" && ((STEP++))

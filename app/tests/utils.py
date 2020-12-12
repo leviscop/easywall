@@ -84,8 +84,7 @@ date = 2020-01-01T00:00:00Z
 timestamp = 1234
 
 [uwsgi]
-ssl-option = 268435456
-https-socket = 0.0.0.0:12227,ssl/easywall.crt,ssl/easywall.key,HIGH
+http-socket = 0.0.0.0:12227
 processes = 5
 threads = 2
 callable = APP

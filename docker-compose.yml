@@ -1,0 +1,15 @@
+version: '3.2'
+services:
+  easywall:
+    image: easywall
+    build:
+      context: .
+    container_name: easywall
+    restart: unless-stopped
+    ports: 
+      - "12227:12227"
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - "/srv/easywall:/config"

@@ -6,7 +6,6 @@ JQUERY="3.3.1"
 POPPER="1.14.3"
 CONFIGFOLDER="config"
 RULESFOLDER="rules"
-SSLFOLDER="ssl"
 CONFIGFILE="web.ini"
 SAMPLEFILE="web.sample.ini"
 CONFIGFILELOG="log.ini"
@@ -105,93 +104,11 @@ chmod -v 750 "${HOMEPATH}"
 chmod -v 750 "${HOMEPATH}/${CONFIGFOLDER}"
 chmod -Rv 750 "${HOMEPATH}/${RULESFOLDER}"
 
-# Step 7
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Create the systemd service \\e[39m" && ((STEP++))
-read -r -d '' SERVICECONTENT <<EOF
-[Unit]
-Description=easywall-web - web interface to control the easywall core application.
-Wants=network-online.target
-After=syslog.target time-sync.target network.target network-online.target
-
-[Service]
-ExecStart=/bin/bash easywall/web/easywall_web.sh
-WorkingDirectory=${HOMEPATH}
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=easywall-web
-User=easywall
-Group=easywall
-
-[Install]
-WantedBy=multi-user.target
-EOF
-echo "${SERVICECONTENT}" >"${SERVICEFILE}"
-systemctl --no-pager daemon-reload
-systemctl --no-pager enable easywall-web
-echo "daemon installed."
-
-# Step 8
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Create a self-signed SSL certificate \\e[39m" && ((STEP++))
-if [ ! -f "${HOMEPATH}/${SSLFOLDER}/${CERTFILE}" ]; then
-    DOMAIN="$(hostname -f)"
-    echo "generating passphrase..."
-    export PASSPHRASE
-    PASSPHRASE=$(
-        head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 128
-        echo
-    )
-
-    SUBJECT="
-C=DE
-ST=Berlin
-O=easywall
-localityName=Berlin
-commonName=$DOMAIN
-organizationalUnitName=IT
-emailAddress=admin@example.com
-"
-    echo "generating private key..."
-    openssl genrsa -des3 -out easywall.key -passout env:PASSPHRASE 4096
-
-    echo "generating certificate sign request..."
-    openssl req \
-        -new \
-        -batch \
-        -subj "$(echo -n "$SUBJECT" | tr "\\n" "/")" \
-        -key easywall.key \
-        -out easywall.csr \
-        -passin env:PASSPHRASE
-
-    echo "change des3 private key to rsa private key"
-    openssl rsa -in easywall.key -out easywall.key -passin env:PASSPHRASE
-
-    echo "sign certificate sign request using openssl"
-    openssl x509 -req -days 3650 -in easywall.csr -signkey easywall.key -out easywall.crt
-
-    echo "moving certificates in place..."
-    mv -v easywall.crt "${HOMEPATH}/${SSLFOLDER}/"
-    mv -v easywall.key "${HOMEPATH}/${SSLFOLDER}/"
-    rm -v easywall.csr
-    chown -Rv easywall:easywall "${HOMEPATH}/${SSLFOLDER}/"
-    chmod -v 700 "${HOMEPATH}/${SSLFOLDER}"
-    chmod -Rv 600 "${HOMEPATH}/${SSLFOLDER}/*"
-else
-    echo "The certificate already exists and does not need to be created."
-fi
-
 # Step 9
 echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Create the logfile \\e[39m" && ((STEP++))
 touch "${LOGFILE}"
 chown easywall:easywall "${LOGFILE}"
 echo "logfile created."
-
-# Step 10
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Start the services \\e[39m" && ((STEP++))
-if [ -f "${SERVICEFILE_EASYWALL}" ]; then
-    systemctl --no-pager restart easywall
-fi
-systemctl --no-pager restart easywall-web
-echo "daemon started."
 
 # Finished.
 echo "" && echo ""
@@ -206,4 +123,3 @@ Daemon Status:
 
 EOF
 echo -e "${INTRODUCTION}"
-systemctl --no-pager status easywall-web

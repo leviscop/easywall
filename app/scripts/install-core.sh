@@ -56,42 +56,10 @@ else
 fi
 
 # Step 4
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Create the systemd service \\e[39m" && ((STEP++))
-read -r -d '' SERVICECONTENT <<EOF
-[Unit]
-Description=easywall - software for simple control of Linux firewalls
-Wants=network-online.target
-After=syslog.target time-sync.target network.target network-online.target
-
-[Service]
-ExecStart=/usr/bin/env python3 -m easywall
-KillMode=mixed
-KillSignal=SIGINT
-WorkingDirectory=${HOMEPATH}
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=easywall
-User=root
-Group=easywall
-
-[Install]
-WantedBy=multi-user.target
-EOF
-echo "${SERVICECONTENT}" >"${SERVICEFILE}"
-systemctl --no-pager daemon-reload
-systemctl --no-pager enable easywall
-echo "daemon installed."
-
-# Step 5
 echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Create the logfile \\e[39m" && ((STEP++))
 touch "${LOGFILE}"
 chown easywall:easywall "${LOGFILE}"
 echo "logfile created."
-
-# Step 6
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Start the services \\e[39m" && ((STEP++))
-systemctl --no-pager restart easywall
-echo "daemon started."
 
 # Finished.
 echo "" && echo ""
@@ -106,4 +74,3 @@ Daemon Status:
 
 EOF
 echo -e "${INTRODUCTION}"
-systemctl --no-pager status easywall

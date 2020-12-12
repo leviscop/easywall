@@ -39,5 +39,4 @@ uwsgi
 uwsgi-plugin-python3
 wget
 unzip
-openssl
 ```

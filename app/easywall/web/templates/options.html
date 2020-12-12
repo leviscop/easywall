@@ -848,16 +848,15 @@
                                 <input type="hidden" name="active_tab" value="webinterface">
 
                                 <div class="form-group">
-                                    <label for="https-socket">Options to start the web server</label>
-                                    <input type="text" class="form-control" id="https-socket" name="https-socket"
-                                        aria-describedby="https-socket_help"
-                                        placeholder="0.0.0.0:12227,ssl/easywall.crt,ssl/easywall.key,HIGH"
-                                        {% if vars.config_web.get_value("uwsgi", "https-socket") != "" %}
-                                        value={{vars.config_web.get_value("uwsgi", "https-socket")}} {% endif %}>
-                                    <small id="https-socket_help" class="form-text text-muted">
-                                        Please enter here the HTTPS information to start the UWSGI web server.<br />
-                                        The string is built from IP address, port, path to the SSL certificate,
-                                        path to the SSL key, and the SSL cipher strength.
+                                    <label for="http-socket">Options to start the web server</label>
+                                    <input type="text" class="form-control" id="http-socket" name="http-socket"
+                                        aria-describedby="http-socket_help"
+                                        placeholder="0.0.0.0:12227"
+                                        {% if vars.config_web.get_value("uwsgi", "httpsç-socket") != "" %}
+                                        value={{vars.config_web.get_value("uwsgi", "http-socket")}} {% endif %}>
+                                    <small id="http-socket_help" class="form-text text-muted">
+                                        Please enter here the HTTP information to start the UWSGI web server.<br />
+                                        The string is built from IP address and port.
                                     </small>
                                 </div>
 
