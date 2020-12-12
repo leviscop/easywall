@@ -25,8 +25,8 @@ from easywall.web.webutils import Webutils
 from easywall.web.whitelist import whitelist, whitelist_save
 
 APP = Flask(__name__)
-CONFIG_PATH = "config/web.ini"
-LOG_CONFIG_PATH = "config/log.ini"
+CONFIG_PATH = "/easywall/config/web.ini"
+LOG_CONFIG_PATH = "/easywall/config/log.ini"
 
 
 @APP.after_request

@@ -11,8 +11,8 @@ from easywall.easywall import Easywall
 from easywall.log import Log
 from easywall.utility import delete_file_if_exists
 
-CONFIG_PATH = "config/easywall.ini"
-LOG_CONFIG_PATH = "config/log.ini"
+CONFIG_PATH = "/easywall/config/easywall.ini"
+LOG_CONFIG_PATH = "/easywall/config/log.ini"
 
 
 class ModifiedHandler(FileSystemEventHandler):

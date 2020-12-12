@@ -90,7 +90,7 @@ threads = 2
 callable = APP
 master = yes
 die-on-term = yes
-wsgi-file = easywall/web/__main__.py
+wsgi-file = /easywall/easywall/web/__main__.py
 need-plugin = python3
 buffer-size = 16384
 """

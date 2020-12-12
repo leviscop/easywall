@@ -6,6 +6,7 @@ SCRIPTS_PATH="$ROOT_PATH/scripts"
 WEB_PATH="$ROOT_PATH/easywall/web"
 
 function install {
+    echo "[INSTALLING EASYWALL]"
     $SCRIPTS_PATH/install-core.sh
     $SCRIPTS_PATH/install-web.sh
     mv $ROOT_PATH/* $EXPORTED_PATH
@@ -13,8 +14,9 @@ function install {
 }
 
 function run {
-    # Link conf files
-    ln -sf /config $ROOT_PATH
+    echo "[RUNNING EASYWALL]"
+    # Copy conf files
+    cp -R /config/* $ROOT_PATH/
     # Start core and web
     python3 -m easywall &
     $WEB_PATH/easywall_web.sh
