@@ -1,13 +1,14 @@
 #!/bin/bash
 
 ROOT_PATH="/easywall"
+EXPORTED_PATH="/config"
 SCRIPTS_PATH="$ROOT_PATH/scripts"
 WEB_PATH="$ROOT_PATH/easywall/web"
 
 function install {
     $SCRIPTS_PATH/install-core.sh
     $SCRIPTS_PATH/install-web.sh
-    mv $ROOT_PATH/* /config
+    mv $ROOT_PATH/* $EXPORTED_PATH
     rm -rf $ROOT_PATH
 }
 
