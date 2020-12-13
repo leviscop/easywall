@@ -11,5 +11,6 @@ services:
     network_mode: host
     cap_add:
       - NET_ADMIN
+      - NET_RAW
     volumes:
-      - "/srv/easywall:/config"
+      - "/srv/easywall/config:/config"
