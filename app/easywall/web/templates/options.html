@@ -852,7 +852,7 @@
                                     <input type="text" class="form-control" id="http-socket" name="http-socket"
                                         aria-describedby="http-socket_help"
                                         placeholder="0.0.0.0:12227"
-                                        {% if vars.config_web.get_value("uwsgi", "httpsç-socket") != "" %}
+                                        {% if vars.config_web.get_value("uwsgi", "http-socket") != "" %}
                                         value={{vars.config_web.get_value("uwsgi", "http-socket")}} {% endif %}>
                                     <small id="http-socket_help" class="form-text text-muted">
                                         Please enter here the HTTP information to start the UWSGI web server.<br />
