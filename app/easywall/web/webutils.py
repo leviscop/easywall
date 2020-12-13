@@ -19,7 +19,7 @@ class Webutils(object):
 
     def __init__(self) -> None:
         """TODO: Doku."""
-        self.cfg = Config("config/web.ini")
+        self.cfg = Config("/easywall/config/web.ini")
         self.cfg_easywall = Config(CONFIG_PATH)
         self.cfg_log = Config(LOG_CONFIG_PATH)
 
@@ -50,7 +50,7 @@ class Webutils(object):
         payload.customcss = css
         payload.machine = self.get_machine_infos()
         payload.latest_version = str(self.cfg.get_value("VERSION", "version"))
-        payload.current_version = file_get_contents(".version")
+        payload.current_version = file_get_contents("/easywall/.version")
         payload.commit_sha = str(self.cfg.get_value("VERSION", "sha"))
         payload.commit_date = self.get_commit_date(str(self.cfg.get_value("VERSION", "date")))
         payload.config_mismatch = self.get_config_version_mismatch("core")
@@ -74,11 +74,11 @@ class Webutils(object):
     def get_config_version_mismatch(self, cfgtype: str) -> bool:
         """TODO: Doku."""
         if cfgtype == "core":
-            cfg1 = Config("config/easywall.sample.ini")
-            cfg2 = Config("config/easywall.ini")
+            cfg1 = Config("/easywall/config/easywall.sample.ini")
+            cfg2 = Config("/easywall/config/easywall.ini")
         elif cfgtype == "web":
-            cfg1 = Config("config/web.sample.ini")
-            cfg2 = Config("config/web.ini")
+            cfg1 = Config("/easywall/config/web.sample.ini")
+            cfg2 = Config("/easywall/config/web.ini")
         for section in cfg1.get_sections():
             if section not in cfg2.get_sections():
                 return True

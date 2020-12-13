@@ -13,7 +13,7 @@ function install {
 }
 
 function run {
-    echo "\e[1m\e[36m[RUNNING EASYWALL]\e[39m\e[0m"
+    echo -e "\e[1m\e[36m[RUNNING EASYWALL]\e[39m\e[0m"
     # Copy conf files
     cp -R $EXPORTED_PATH/* $ROOT_PATH/
     # Start core and web
