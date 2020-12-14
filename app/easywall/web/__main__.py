@@ -1,7 +1,7 @@
 """The app module contains all information of the Flask app."""
 import os
 from datetime import datetime, timezone
-from logging import info
+from logging import info, warning
 from typing import Tuple, Union
 
 from flask import Flask, wrappers
@@ -209,20 +209,22 @@ class DefaultConfig(object):
     MAX_CONTENT_LENGTH = 10240
 
 
+class ProductionConfigSecure(DefaultConfig):
+    """TODO: Doku."""
+
 class ProductionConfig(DefaultConfig):
     """TODO: Doku."""
 
+    SESSION_COOKIE_SECURE = False
+    SESSION_COOKIE_HTTPONLY = False
+    PREFERRED_URL_SCHEME = "http"
 
-class DevelopmentConfig(DefaultConfig):
+class DevelopmentConfig(ProductionConfig):
     """TODO: Doku."""
 
     DEBUG = True
     TESTING = True
     ENV = "development"
-    SESSION_COOKIE_SECURE = False
-    SESSION_COOKIE_HTTPONLY = False
-    PREFERRED_URL_SCHEME = "http"
-
 
 class Main(object):
     """TODO: Doku."""
@@ -246,8 +248,12 @@ class Main(object):
             APP.config.from_object('easywall.web.__main__.DevelopmentConfig')
         else:
             info("loading Flask production configuration")
-            APP.config.from_object('easywall.web.__main__.ProductionConfig')
-
+            if self.cfg.get_value("uwsgi", "http-socket") != "":
+                warning("Running server through HTTP. This is not recommended nor safe unless running behind a trusted reverse proxy.")
+                APP.config.from_object('easywall.web.__main__.ProductionConfig')
+            else:
+                APP.config.from_object('easywall.web.__main__.ProductionConfigSecure')
+            
         self.rules_handler = RulesHandler()
 
         self.login_attempts = self.cfg.get_value("WEB", "login_attempts")

@@ -14,3 +14,6 @@ services:
       - NET_RAW
     volumes:
       - "/srv/easywall/config:/config"
+      #- "/srv/easywall/easywall.log:/var/log/easywall.log" # Optional, and file needs to exist in host.
+      #- "/certs/ssl.crt:/ssl/easywall.crt" # Optional, and needed to enable HTTPS by default
+      #- "/certs/ssl.key:/ssl/easywall.key" # Optional, and needed to enable HTTPS by default

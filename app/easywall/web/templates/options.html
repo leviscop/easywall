@@ -848,15 +848,21 @@
                                 <input type="hidden" name="active_tab" value="webinterface">
 
                                 <div class="form-group">
-                                    <label for="http-socket">Options to start the web server</label>
-                                    <input type="text" class="form-control" id="http-socket" name="http-socket"
-                                        aria-describedby="http-socket_help"
-                                        placeholder="0.0.0.0:12227"
+                                    <label for="https-socket">Options to start the web server</label>
+                                    <input type="text" class="form-control" id="https-socket" name="https-socket"
+                                        aria-describedby="https-socket_help"
+                                        placeholder="0.0.0.0:12227,/ssl/easywall.crt,/ssl/easywall.key,HIGH"
                                         {% if vars.config_web.get_value("uwsgi", "http-socket") != "" %}
-                                        value={{vars.config_web.get_value("uwsgi", "http-socket")}} {% endif %}>
-                                    <small id="http-socket_help" class="form-text text-muted">
-                                        Please enter here the HTTP information to start the UWSGI web server.<br />
-                                        The string is built from IP address and port.
+                                            value={{vars.config_web.get_value("uwsgi", "http-socket")}} 
+                                        {% elif vars.config_web.get_value("uwsgi", "https-socket") != "" %}
+                                            value={{vars.config_web.get_value("uwsgi", "https-socket")}} }
+                                        {% endif %}
+                                    >
+                                    <small id="https-socket_help" class="form-text text-muted">
+                                        Please enter here the HTTP/HTTPS information to start the UWSGI web server.<br />
+                                        To use HTTP, the string is built from IP address and port alone. However, 
+                                        if you wish to enable HTTPS, the path to the SSL certificate and the
+                                        path to the SSL key must be added, as well as the SSL cipher strength.
                                     </small>
                                 </div>
 

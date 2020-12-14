@@ -7,22 +7,22 @@ POPPER="1.14.3"
 CONFIGFOLDER="config"
 RULESFOLDER="rules"
 CONFIGFILE="web.ini"
-SAMPLEFILE="web.sample.ini"
+SAMPLEFILE_HTTP="web.sample.ini"
+SAMPLEFILE_HTTPS="web.https.sample.ini"
 CONFIGFILELOG="log.ini"
 SAMPLEFILELOG="log.sample.ini"
 SERVICEFILE="/lib/systemd/system/easywall-web.service"
 SERVICEFILE_EASYWALL="/lib/systemd/system/easywall.service"
-CERTFILE="easywall.crt"
 LOGFILE="/var/log/easywall.log"
 
 SCRIPTNAME=$(basename "$0")
 SCRIPTSPATH=$(dirname "$(readlink -f "$0")")
 HOMEPATH="$(dirname "$SCRIPTSPATH")"
+SSL_DIR="/ssl"
+SSL_CRT_NAME="easywall.crt"
+SSL_KEY_NAME="easywall.key"
 WEBDIR="$HOMEPATH/easywall/web"
 TMPDIR="$WEBDIR/tmp"
-
-STEPS=10
-STEP=1
 
 if [ "$EUID" -ne 0 ]; then
     read -r -d '' NOROOT <<EOF
@@ -42,7 +42,28 @@ echo "" && echo -e "\\e[32m Create the configuration from the example configurat
 if [ -f "${HOMEPATH}/${CONFIGFOLDER}/${CONFIGFILE}" ]; then
     echo -e "\\e[33mThe configuration file is not overwritten because it already exists and adjustments may have been made.\\e[39m"
 else
-    cp -v "${HOMEPATH}/${CONFIGFOLDER}/${SAMPLEFILE}" "${HOMEPATH}/${CONFIGFOLDER}/${CONFIGFILE}"
+    ssl_crt=0
+    ssl_key=0
+    
+    if [ -f "${SSL_DIR}/${SSL_CRT_NAME}" ]; then
+        ssl_crt=1
+    else
+        echo -e "\\e[33mSSL certificate file not found!\\e[39m"
+    fi
+    
+    if [ -f "${SSL_DIR}/${SSL_KEY_NAME}" ]; then
+        ssl_key=1
+    else
+        echo -e "\\e[33mSSL key file not found!\\e[39m"
+    fi
+
+    if [ $ssl_crt -eq 1 ] && [ $ssl_key ]; then
+        echo -e "\\e[33mSSL files found. HTTPS will be used.\\e[39m"
+        cp -v "${HOMEPATH}/${CONFIGFOLDER}/${SAMPLEFILE_HTTPS}" "${HOMEPATH}/${CONFIGFOLDER}/${CONFIGFILE}"
+    else
+        echo -e "\\e[33mSSL files not found. HTTP will be used.\\e[39m"
+        cp -v "${HOMEPATH}/${CONFIGFOLDER}/${SAMPLEFILE_HTTP}" "${HOMEPATH}/${CONFIGFOLDER}/${CONFIGFILE}"
+    fi
 fi
 if [ -f "${HOMEPATH}/${CONFIGFOLDER}/${CONFIGFILELOG}" ]; then
     echo -e "\\e[33mThe log configuration file is not overwritten because it already exists and adjustments may have been made.\\e[39m"

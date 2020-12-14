@@ -56,7 +56,7 @@ def options_save() -> str:
                     if cfgtype == "easywall":
                         utils.cfg_easywall.set_value(section, key, value)
                     elif cfgtype == "web":
-                        utils.cfg.set_value(section, key, value)
+                        set_web_options(section, key, value, utils)
                     elif cfgtype == "log":
                         utils.cfg_log.set_value(section, key, value)
                     else:
@@ -79,10 +79,27 @@ def options_save() -> str:
         return options(saved=True, active_tab=active_tab)
     return login()
 
-
 def correct_value_checkbox(key: str) -> str:
     """Correct the value of a checkbox."""
     key = key.replace("checkbox_", "")
     if key in request.form:
         return "yes"
     return "no"
+
+def set_web_options(section: str, key: str, value: str, utils):
+    if key == "https-socket":
+        change_web_protocol(section, value, utils)
+    else:
+        utils.cfg.set_value(section, key, value)
+
+def change_web_protocol(section: str, option: str, utils):
+    if "," in option:
+        # Switch to HTTPS
+        utils.cfg.remove_key(section, "http-socket")
+        utils.cfg.set_value(section, "ssl-option", "268435456")
+        utils.cfg.set_value(section, "https-socket", option)
+    else:
+        # Switch to HTTP
+        utils.cfg.remove_key(section, "ssl-option")
+        utils.cfg.remove_key(section, "https-socket")
+        utils.cfg.set_value(section, "http-socket", option)
