@@ -38,11 +38,7 @@ EOF
 fi
 
 # Step 1
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Install the required Python3 packages using pip3 \\e[39m" && ((STEP++))
-pip3 install "${HOMEPATH}"
-
-# Step 2
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Create the configuration from the example configuration \\e[39m" && ((STEP++))
+echo "" && echo -e "\\e[32m Create the configuration from the example configuration \\e[39m" && ((STEP++))
 if [ -f "${HOMEPATH}/${CONFIGFOLDER}/${CONFIGFILE}" ]; then
     echo -e "\\e[33mThe configuration file is not overwritten because it already exists and adjustments may have been made.\\e[39m"
 else
@@ -54,17 +50,8 @@ else
     cp -v "${HOMEPATH}/${CONFIGFOLDER}/${SAMPLEFILELOG}" "${HOMEPATH}/${CONFIGFOLDER}/${CONFIGFILELOG}"
 fi
 
-# Step 3
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Create the group under which the software should run \\e[39m" && ((STEP++))
-if [ "$(getent group easywall)" ]; then
-    echo "The easywall group is already present."
-else
-    groupadd easywall
-    echo "The easywall group was created."
-fi
-
-# Step 4
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Download of several libraries required for easywall-web \\e[39m" && ((STEP++))
+# Step 2
+echo "" && echo -e "\\e[32m Download of several libraries required for easywall-web \\e[39m" && ((STEP++))
 mkdir "$TMPDIR" && cd "$TMPDIR" || exit 1
 
 # Bootstrap
@@ -88,27 +75,6 @@ wget -q --timeout=10 --tries=5 --retry-connrefused --show-progress "https://cdnj
 
 cd "$HOMEPATH" || exit 1
 rm -rf "$TMPDIR"
-
-# Step 5
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Create the application user and add it to the application group. \\e[39m" && ((STEP++))
-adduser --system --debug easywall
-usermod -g easywall easywall
-
-# Step 6
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Set permissions on files and folders \\e[39m" && ((STEP++))
-chown -Rv easywall:easywall "${HOMEPATH}"
-chown -Rv easywall:easywall "$WEBDIR"
-chown -Rv easywall:easywall "${HOMEPATH}/${CONFIGFOLDER}"
-chown -Rv easywall:easywall "${HOMEPATH}/${RULESFOLDER}"
-chmod -v 750 "${HOMEPATH}"
-chmod -v 750 "${HOMEPATH}/${CONFIGFOLDER}"
-chmod -Rv 750 "${HOMEPATH}/${RULESFOLDER}"
-
-# Step 9
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Create the logfile \\e[39m" && ((STEP++))
-touch "${LOGFILE}"
-chown easywall:easywall "${LOGFILE}"
-echo "logfile created."
 
 # Finished.
 echo "" && echo ""

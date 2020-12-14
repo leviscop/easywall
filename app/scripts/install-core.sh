@@ -29,11 +29,6 @@ EOF
 fi
 
 # Step 1
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Install the required Python3 packages using pip3 \\e[39m" && ((STEP++))
-pip3 install setuptools wheel
-pip3 install "${HOMEPATH}"
-
-# Step 2
 echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Create the configuration from the example configuration \\e[39m" && ((STEP++))
 if [ -f "${HOMEPATH}/${CONFIGFOLDER}/${CONFIGFILE}" ]; then
     echo -e "\\e[33mThe configuration file is not overwritten because it already exists and adjustments may have been made.\\e[39m"
@@ -45,21 +40,6 @@ if [ -f "${HOMEPATH}/${CONFIGFOLDER}/${CONFIGFILELOG}" ]; then
 else
     cp -v "${HOMEPATH}/${CONFIGFOLDER}/${SAMPLEFILELOG}" "${HOMEPATH}/${CONFIGFOLDER}/${CONFIGFILELOG}"
 fi
-
-# Step 3
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Create the group under which the software should run \\e[39m" && ((STEP++))
-if [ "$(getent group easywall)" ]; then
-    echo "The easywall group is already present."
-else
-    groupadd easywall
-    echo "The easywall group was created."
-fi
-
-# Step 4
-echo "" && echo -e "\\e[33m($STEP/$STEPS)\\e[32m Create the logfile \\e[39m" && ((STEP++))
-touch "${LOGFILE}"
-chown easywall:easywall "${LOGFILE}"
-echo "logfile created."
 
 # Finished.
 echo "" && echo ""

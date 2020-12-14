@@ -17,7 +17,7 @@ class RulesHandler():
         self.types = ["blacklist", "whitelist", "tcp", "udp", "custom", "forwarding"]
         self.states = ["current", "new", "backup"]
         self.filename = "rules.yml"
-        self.filepath = "{}/{}".format("config", self.filename)
+        self.filepath = "{}/{}".format("/easywall/config", self.filename)
         self.ensure_file_exists()
         self.rules = self.load()
 
