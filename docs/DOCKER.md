@@ -11,13 +11,21 @@ Until an official image is uploaded to Docker Hub, here's how to run Easywall in
     docker-compose up -d
     ```
 
-## Provide a secure access to the web GUI
+## Security concerns
 
-The docker approach does not make use of any SSL features, but instead assumes the user installing the software will provide a safe way to access the web GUI. This can be easily achieved using a **reverse proxy**, as explained in the next subsection:
+The docker approach lets you choose whether to start the web server with SSL features enabled or not.
 
-### Apache reverse proxy
+### Running a HTTPS server inside the container
 
-To set up a secure reverse proxy using Apache2 you will only need to create a new configuration file for the virtual host as follows:
+By default, the container will only run a HTTPS server if a SSL certificate and key are provided within the `docker-compose.yaml` file. You will need to mount both files as volumes the first time you run `docker-compose up` if you want a HTTPS server deployed by default. However, if you don't, you still can switch to HTTPS directly from the web GUI, via `Options -> Webinterface`.
+
+The SSL files must be placed inside the container under `/ssl`, and the certficate must be named `easywall.crt`, while the private key must be named `easywall.key`.
+
+### Reverse proxy
+
+If you already have a main web server running in another machine with SSL features enabled, and you would like to reuse it, then the reverse proxy's approach is your best option.
+
+To set up a secure reverse proxy using Apache2 you will only need to create a configuration file for the virtual host as follows:
 
 ```apache
 <VirtualHost *:443>
@@ -38,4 +46,16 @@ To set up a secure reverse proxy using Apache2 you will only need to create a ne
 </VirtualHost>
 ```
 
-Of course, you will need to edit this template to fit your own scenario.
+And, of course, you will need to edit this template to fit your own scenario.
+
+## Logging
+
+By default, Easywall logs to `/var/log/easywall.log` inside the container. So, you could create a log file and mount it as a volume pointing to `/var/log/easywall.log`, and you would then be able to access Easywall's logs directly from the host.
+
+Moreover, you may also call `docker logs <container_name>` to check the logs from the current execution.
+
+## Known issues
+
+### I switched from HTTPS to HTTP and I can no longer log in
+
+This is a cookie 'issue'. You will need to remove all easywall cookies from your browser and it should be working as expected again.
