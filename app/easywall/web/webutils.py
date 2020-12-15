@@ -13,13 +13,16 @@ from easywall.config import Config
 from easywall.utility import file_exists, file_get_contents, time_duration_diff
 from easywall.web.defaultpayload import DefaultPayload
 
+import os
+
+INSTALL_PATH = os.environ["INSTALL_PATH"] 
 
 class Webutils(object):
     """Create a couple of shared functions used in the route functions."""
 
     def __init__(self) -> None:
         """TODO: Doku."""
-        self.cfg = Config("/easywall/config/web.ini")
+        self.cfg = Config(INSTALL_PATH + "/config/web.ini")
         self.cfg_easywall = Config(CONFIG_PATH)
         self.cfg_log = Config(LOG_CONFIG_PATH)
 
@@ -50,7 +53,7 @@ class Webutils(object):
         payload.customcss = css
         payload.machine = self.get_machine_infos()
         payload.latest_version = str(self.cfg.get_value("VERSION", "version"))
-        payload.current_version = file_get_contents("/easywall/.version")
+        payload.current_version = file_get_contents(INSTALL_PATH + "/.version")
         payload.commit_sha = str(self.cfg.get_value("VERSION", "sha"))
         payload.commit_date = self.get_commit_date(str(self.cfg.get_value("VERSION", "date")))
         payload.config_mismatch = self.get_config_version_mismatch("core")
@@ -74,11 +77,11 @@ class Webutils(object):
     def get_config_version_mismatch(self, cfgtype: str) -> bool:
         """TODO: Doku."""
         if cfgtype == "core":
-            cfg1 = Config("/easywall/config/easywall.sample.ini")
-            cfg2 = Config("/easywall/config/easywall.ini")
+            cfg1 = Config(INSTALL_PATH + "/config/easywall.sample.ini")
+            cfg2 = Config(INSTALL_PATH + "/config/easywall.ini")
         elif cfgtype == "web":
-            cfg1 = Config("/easywall/config/web.sample.ini")
-            cfg2 = Config("/easywall/config/web.ini")
+            cfg1 = Config(INSTALL_PATH + "/config/web.sample.ini")
+            cfg2 = Config(INSTALL_PATH + "/config/web.ini")
         for section in cfg1.get_sections():
             if section not in cfg2.get_sections():
                 return True

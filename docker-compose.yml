@@ -13,7 +13,7 @@ services:
       - NET_ADMIN
       - NET_RAW
     volumes:
-      - "/srv/easywall/config:/config"
-      #- "/srv/easywall/easywall.log:/var/log/easywall.log" # Optional, and file needs to exist in host.
-      #- "/certs/ssl.crt:/ssl/easywall.crt" # Optional, and needed to enable HTTPS by default
-      #- "/certs/ssl.key:/ssl/easywall.key" # Optional, and needed to enable HTTPS by default
+      - "${DATAPATH:-/srv/easywall/config}:/config" # Optional, provides a way to see and edit the configuration files directly from the host.
+      #- "${LOGFILE:-/srv/easywall/easywall.log}:/var/log/easywall.log" # Optional, and file must exist in host filesystem.
+      #- "${CERTFILE:-/certs/ssl.crt}:/ssl/easywall.crt" # Optional, and needed to enable HTTPS by default
+      #- "${KEYFILE:-/certs/ssl.key}:/ssl/easywall.key" # Optional, and needed to enable HTTPS by default

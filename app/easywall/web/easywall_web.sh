@@ -35,5 +35,5 @@ done
 if [[ $DEBUG == true ]]; then
     /usr/bin/env python3 -m easywall.web
 else
-    uwsgi /easywall/config/web.ini
+    uwsgi ${INSTALL_PATH}/config/web.ini
 fi

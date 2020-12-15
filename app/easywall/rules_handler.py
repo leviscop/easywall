@@ -8,6 +8,9 @@ from easywall.utility import (create_file_if_not_exists, file_exists,
                               file_get_contents, format_exception,
                               write_into_file)
 
+import os
+
+INSTALL_PATH = os.environ["INSTALL_PATH"]
 
 class RulesHandler():
     """TODO: Doku."""
@@ -17,7 +20,7 @@ class RulesHandler():
         self.types = ["blacklist", "whitelist", "tcp", "udp", "custom", "forwarding"]
         self.states = ["current", "new", "backup"]
         self.filename = "rules.yml"
-        self.filepath = "{}/{}".format("/easywall/config", self.filename)
+        self.filepath = "{}/{}".format(INSTALL_PATH + "/config", self.filename)
         self.ensure_file_exists()
         self.rules = self.load()
 

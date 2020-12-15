@@ -5,15 +5,10 @@ CONFIGFILE="easywall.ini"
 SAMPLEFILE="easywall.sample.ini"
 CONFIGFILELOG="log.ini"
 SAMPLEFILELOG="log.sample.ini"
-SERVICEFILE="/lib/systemd/system/easywall.service"
-LOGFILE="/var/log/easywall.log"
 
 SCRIPTNAME=$(basename "$0")
 SCRIPTSPATH=$(dirname "$(readlink -f "$0")")
 HOMEPATH="$(dirname "$SCRIPTSPATH")"
-
-STEPS=6
-STEP=1
 
 if [ "$EUID" -ne 0 ]; then
     read -r -d '' NOROOT <<EOF

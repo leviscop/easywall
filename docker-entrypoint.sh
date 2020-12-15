@@ -1,9 +1,7 @@
 #!/bin/bash
 
-ROOT_PATH="/easywall"
-EXPORTED_PATH="/config"
-SCRIPTS_PATH="$ROOT_PATH/scripts"
-WEB_PATH="$ROOT_PATH/easywall/web"
+SCRIPTS_PATH="$INSTALL_PATH/scripts"
+WEB_PATH="$INSTALL_PATH/easywall/web"
 
 function install {
     echo -e "\e[1m\e[36m[INSTALLING EASYWALL]\e[39m\e[0m"
@@ -11,14 +9,15 @@ function install {
     $SCRIPTS_PATH/install-web.sh
     # Include hidden files (.*)
     shopt -s dotglob
-    mv $ROOT_PATH/* $EXPORTED_PATH
+    # Move all files to exported path
+    mv $INSTALL_PATH/* $EXPORTED_PATH
 }
 
 function run {
     echo -e "\e[1m\e[36m[RUNNING EASYWALL]\e[39m\e[0m"
-    # Link conf files
-    rm -rf $ROOT_PATH
-    ln -s $EXPORTED_PATH $ROOT_PATH
+    # Link conf files to install path
+    rm -rf $INSTALL_PATH
+    ln -s $EXPORTED_PATH $INSTALL_PATH
     # Start core and web
     python3 -m easywall &
     $WEB_PATH/easywall_web.sh

@@ -24,9 +24,13 @@ from easywall.web.ports import ports, ports_save
 from easywall.web.webutils import Webutils
 from easywall.web.whitelist import whitelist, whitelist_save
 
+import os
+
+INSTALL_PATH = os.environ["INSTALL_PATH"]
+
 APP = Flask(__name__)
-CONFIG_PATH = "/easywall/config/web.ini"
-LOG_CONFIG_PATH = "/easywall/config/log.ini"
+CONFIG_PATH = INSTALL_PATH + "/config/web.ini"
+LOG_CONFIG_PATH = INSTALL_PATH + "/config/log.ini"
 
 
 @APP.after_request
