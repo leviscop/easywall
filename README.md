@@ -20,7 +20,7 @@ The `docker-compose.yml` file is pretty self explanatory and includes some usefu
 
 Because of the options used to run the container and explained before, when the firewall rules are applied, they are still enabled even though the docker container is shutted down. However, unless theses rules are saved and automatically restored at boot time, they will not be enabled after the host machine is rebooted. 
 
-So, you can expect the same behaviour as when using `iptables` directly from the host, with the only difference that you won't be able to see the container's rules from the host via `iptables -L`. You would have to run the command **inside** the container, via `docker exec <container_name> <command>`. Hence, to see all NAT rules inside your easywall container, for instance, you can do `docker exec easywall iptables -t nat -L`.
+So, you can expect the same behaviour as when using `iptables` directly from the host, with the only difference that you won't be able to see the container's rules from the host via `iptables -L`. You would have to run the command **inside** the container, via `docker exec <container_name> <command>`. Hence, to see all NAT rules inside your easywall container, you could do `docker exec easywall iptables -t nat -L`.
 
 # Known issues
 

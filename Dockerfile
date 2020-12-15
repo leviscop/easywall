@@ -11,14 +11,12 @@ ENV INSTALL_PATH /srv/easywall
 ENV EXPORTED_PATH /config
 
 COPY app ${INSTALL_PATH}
-RUN chown -Rv easywall:easywall ${INSTALL_PATH}
 RUN chmod -v 750 ${INSTALL_PATH}
 RUN chmod -v 750 ${INSTALL_PATH}/config
 
 WORKDIR ${INSTALL_PATH}
 
 RUN pip3 install .
-RUN find ./ -type f -name *.sh -exec chmod +x {} \;
 
 # Bootstrap, Popper and JQuery Slim
 ENV BOOTSTRAP "4.1.3"
@@ -39,6 +37,10 @@ RUN wget -q --tries=5 --retry-connrefused "https://fontawesome.com/v$FONTAWESOME
 RUN unzip -q "font-awesome-$FONTAWESOME.zip"
 RUN cp -r "font-awesome-$FONTAWESOME/css/"* "$INSTALL_PATH/easywall/web/static/css/" && cp -r "font-awesome-$FONTAWESOME/fonts/"* "$INSTALL_PATH/easywall/web/static/fonts/"
 RUN rm -rf ./*
+
+# Permissions
+RUN chown -Rv easywall:easywall ${INSTALL_PATH}
+RUN find ${INSTALL_PATH} -type f -name *.sh -exec chmod +x {} \;
 
 WORKDIR ${EXPORTED_PATH}
 
