@@ -48,7 +48,7 @@ class Easywall():
         # and reset iptables for clean setup
         self.iptables.reset()
 
-        # drop intbound traffic and allow outbound traffic
+        # drop intbound traffic and allow outbound traffic by default
         self.iptables.add_policy(Chain.INPUT, Target.DROP)
         self.iptables.add_policy(Chain.OUTPUT, Target.ACCEPT)
 
@@ -105,9 +105,6 @@ class Easywall():
                 Chain.INPUT,
                 "-m limit --limit {}/minute -j LOG --log-prefix \"easywall blocked: \"".
                 format(self.cfg.get_value("IPTABLES", "log_blocked_connections_log_limit")))
-
-        # reject all packages which not match the rules
-        self.iptables.add_append(Chain.INPUT, "-j DROP")
 
     def apply_forwarding(self) -> None:
         """TODO: Doku."""

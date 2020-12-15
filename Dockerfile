@@ -29,8 +29,8 @@ RUN wget -q --tries=5 --retry-connrefused  "https://stackpath.bootstrapcdn.com/b
     && wget -q --tries=5 --retry-connrefused "https://code.jquery.com/jquery-$JQUERY.slim.min.js" -P "$INSTALL_PATH/easywall/web/static/js"
 
 # Font Awesome
-WORKDIR "/tmp"
 ENV FONTAWESOME "4.7.0"
+WORKDIR "/tmp"
 RUN wget -q --tries=5 --retry-connrefused "https://fontawesome.com/v$FONTAWESOME/assets/font-awesome-$FONTAWESOME.zip"
 RUN unzip -q "font-awesome-$FONTAWESOME.zip"
 RUN cp -r "font-awesome-$FONTAWESOME/css/"* "$INSTALL_PATH/easywall/web/static/css/" && cp -r "font-awesome-$FONTAWESOME/fonts/"* "$INSTALL_PATH/easywall/web/static/fonts/"

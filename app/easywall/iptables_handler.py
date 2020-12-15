@@ -152,6 +152,14 @@ class Iptables():
         else:
             info("all iptables chains deleted")
 
+        self.create_docker_chains()
+
+    def create_docker_chains(self) -> None:
+        self.add_chain("DOCKER")
+        self.add_chain("DOCKER-USER")
+        self.add_chain("DOCKER-ISOLATION-STAGE-1")
+        self.add_chain("DOCKER-ISOLATION-STAGE-2")
+
     def reset(self) -> None:
         """Reset iptables and allows all connections to the system and from the system."""
         self.add_policy(Chain.INPUT, Target.ACCEPT)
