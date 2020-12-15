@@ -6,8 +6,9 @@ Until an official image is uploaded to Docker Hub, here's how to run Easywall in
     ```
     git clone --single-branch --branch docker https://github.com/joseantmazonsb/easywall.git
     ```
-2. Use `docker-compose` to build and run the container:
+3. Use `docker-compose` to build and run the container:
     ```
+	cd ./easywall
     docker-compose up -d
     ```
 
