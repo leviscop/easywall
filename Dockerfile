@@ -11,8 +11,6 @@ ENV INSTALL_PATH /srv/easywall
 ENV EXPORTED_PATH /config
 
 COPY app ${INSTALL_PATH}
-RUN chmod -v 750 ${INSTALL_PATH}
-RUN chmod -v 750 ${INSTALL_PATH}/config
 
 WORKDIR ${INSTALL_PATH}
 
@@ -40,6 +38,8 @@ RUN rm -rf ./*
 
 # Permissions
 RUN chown -Rv easywall:easywall ${INSTALL_PATH}
+RUN chmod -v 750 ${INSTALL_PATH}
+RUN chmod -v 750 ${INSTALL_PATH}/config
 RUN find ${INSTALL_PATH} -type f -name *.sh -exec chmod +x {} \;
 
 WORKDIR ${EXPORTED_PATH}
