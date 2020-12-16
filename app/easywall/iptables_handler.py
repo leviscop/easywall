@@ -1,6 +1,6 @@
 """TODO: Doku."""
 from enum import Enum
-from logging import debug, info, warning
+from logging import debug, info, warning, error
 from typing import Union
 
 from easywall.config import Config
@@ -39,6 +39,7 @@ class DefaultChain(Enum):
     @classmethod
     def has_value(cls, value):
         return value in cls._value2member_map_
+
 
 class Chain(Enum):
     """iptables's default and custom chains provided by easywall"""
@@ -84,8 +85,19 @@ class Iptables:
         self.backup_file_ipv4 = "iptables_v4_backup"
         self.backup_file_ipv6 = "iptables_v6_backup"
 
-    def add_policy(self, chain: DefaultChain, target: PolicyTarget) -> None:
-        """Create a new policy in iptables firewall by using the os command."""
+    def add_policy(self, chain: Union[Chain, DefaultChain], target: PolicyTarget) -> bool:
+        """Create a new policy in iptables firewall by using the os command.
+
+        Args:
+            chain: Chain in which the policy will be applied.
+            target: Action to be performed when the rule is satisfied.
+
+        Returns:
+            True if the policy was applied, False if not.
+        """
+        if not DefaultChain.has_value(chain):
+            error(f"unable to apply policy to non default chain {chain.value}")
+            return False
         option = "-P"
         execute_os_command("{} {} {} {}".format(
             self.iptables_bin, option, chain.value, target.value))
@@ -94,6 +106,7 @@ class Iptables:
                 self.ip6tables_bin, option, chain.value, target.value))
 
         info("iptables policy added for chain {} and target {}".format(chain.value, target.value))
+        return True
 
     def add_chain(self, chain: Union[Chain, str]) -> None:
         """Create a new custom chain in iptables."""
@@ -236,9 +249,9 @@ class Iptables:
 
     def reset(self) -> None:
         """Reset iptables and allows all connections to the system and from the system."""
-        self.add_policy(Chain.INPUT, PolicyTarget.ACCEPT)
-        self.add_policy(Chain.OUTPUT, PolicyTarget.ACCEPT)
-        self.add_policy(Chain.FORWARD, PolicyTarget.ACCEPT)
+        self.add_policy(DefaultChain.INPUT, PolicyTarget.ACCEPT)
+        self.add_policy(DefaultChain.OUTPUT, PolicyTarget.ACCEPT)
+        self.add_policy(DefaultChain.FORWARD, PolicyTarget.ACCEPT)
         self.flush_all_chains()
         self.delete_all_chains()
 
