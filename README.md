@@ -18,11 +18,10 @@ The `docker-compose.yml` file is pretty self explanatory and includes some usefu
 
 # Expected behaviour
 
-The container will load all rules from the file `rules.yml` when it is started, albeit it saves the previous rules to restore them once it is **gracefully** stopped (*planned*). Furthermore, **the container won't start at boot time by default**, so unless the `restart` option is modified inside the `docker-compose.yml` file, the rules will not be enabled after the host machine is rebooted.
+The container will load all rules from the file `rules.yml` when it is started, and will be enabled until the host is rebooted, even if the container is stopped. Furthermore, **the container won't start at boot time by default**, so unless the `restart` option is modified inside the `docker-compose.yml` file, the rules will not be enabled after the host machine is rebooted. This way, we achieve the same behaviour as if running iptables directly over the host.
 
-You will be able to see the firewall rules from the host via `iptables -L`, although you can also use `docker exec <container_name> <command>` to execute all sort of commands inside the container.
+Moreover, you will be able to see the firewall rules from the host via `iptables -L`, although you can also use `docker exec <container_name> <command>` to execute all sort of commands inside the container.
 
 # Known issues
 
-- **All** docker rules are currently flushed when easywall applies its rules. This **may** affect your docker networks.
-- Running other containers **will** affect your iptables rules, since docker will automatically add rules when starting a container.
+- Running other containers will **slightly** affect your iptables rules, since docker will automatically add rules when starting a container.
