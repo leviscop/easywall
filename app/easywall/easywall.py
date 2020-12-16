@@ -4,7 +4,7 @@ from logging import debug, info
 
 from easywall.acceptance import Acceptance
 from easywall.config import Config
-from easywall.iptables_handler import Chain, Iptables, Target
+from easywall.iptables_handler import Table, Chain, Iptables, PolicyTarget
 from easywall.rules_handler import RulesHandler
 from easywall.utility import file_exists, rename_file
 
@@ -49,8 +49,8 @@ class Easywall():
         self.iptables.reset()
 
         # drop intbound traffic and allow outbound traffic by default
-        self.iptables.add_policy(Chain.INPUT, Target.DROP)
-        self.iptables.add_policy(Chain.OUTPUT, Target.ACCEPT)
+        self.iptables.add_policy(Chain.INPUT, PolicyTarget.DROP)
+        self.iptables.add_policy(Chain.OUTPUT, PolicyTarget.ACCEPT)
 
         # accept traffic from loopback interface (localhost)
         self.iptables.add_append(Chain.INPUT, "-i lo -j ACCEPT")
@@ -114,11 +114,11 @@ class Easywall():
             dest = ipaddr.split(":")[2]
 
             self.iptables.insert(
-                table="nat",
+                table_value=Table.NAT,
                 chain=Chain.PREROUTING,
                 rule="-p {} --dport {} -j REDIRECT --to-port {}".format(proto, dest, source))
             self.iptables.insert(
-                table="nat",
+                table_value=Table.NAT,
                 chain=Chain.OUTPUT,
                 rule="-p {} -o lo --dport {} -j REDIRECT --to-port {}".format(proto, dest, source))
             self.iptables.add_append(

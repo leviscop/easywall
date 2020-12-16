@@ -5,7 +5,7 @@ from io import StringIO
 from math import floor
 from os import R_OK, access, chmod, makedirs, path, remove, rename
 from shutil import rmtree
-from subprocess import run
+from subprocess import run, PIPE
 from traceback import TracebackException
 from typing import Any, List
 from urllib import parse
@@ -194,15 +194,24 @@ def time_duration_diff(date1: datetime, date2: datetime) -> str:
 # System Operations
 
 
-def execute_os_command(command: str) -> bool:
+class CommandResult:
+    """Represents the result of an OS command's execution."""
+
+    def __init__(self, code: int, output: str, err: str):
+        self.code = code
+        self.output = output
+        self.err = err
+        self.successful = (code < 1)
+
+
+def execute_os_command(command: str) -> CommandResult:
     """
     Execute a command on the operating system.
-
-    [Data Types] bool
+    Returns an object containing the output 
+    [Data Types] object
+    Args:
+        command (object): Command to be executed.
     """
-    proc = run(command, shell=True, check=False)
-    # proc.stderr
-    # proc.stdout
-    if proc.returncode > 0:
-        return False
-    return True
+    proc = run(command, shell=True, check=False, stdout=PIPE, stderr=PIPE)
+    result = CommandResult(proc.returncode, proc.stdout.decode('utf-8'), proc.stderr.decode('utf-8'))
+    return result

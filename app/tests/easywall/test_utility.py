@@ -8,7 +8,7 @@ from easywall.utility import (create_file_if_not_exists,
                               file_exists, file_get_contents,
                               get_abs_path_of_filepath, is_float, is_int,
                               rename_file, time_duration_diff, urlencode,
-                              write_into_file, folder_exists)
+                              write_into_file, folder_exists, CommandResult)
 from tests import unittest
 
 
@@ -71,7 +71,7 @@ class TestUtility(unittest.TestCase):
 
     def test_execute_os_command(self) -> None:
         """TODO: Doku."""
-        self.assertTrue(execute_os_command("touch testfile"))
+        self.assertTrue(execute_os_command("touch testfile").successful)
         self.assertTrue(file_exists("testfile"))
         delete_file_if_exists("testfile")
 

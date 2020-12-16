@@ -4,7 +4,7 @@ from tests.utils import prepare_configuration, restore_configuration
 
 from easywall.__main__ import CONFIG_PATH
 from easywall.config import Config
-from easywall.iptables_handler import Chain, Iptables, Target
+from easywall.iptables_handler import Chain, Iptables, PolicyTarget
 
 
 class TestIPTablesHandler(unittest.TestCase):
@@ -23,18 +23,18 @@ class TestIPTablesHandler(unittest.TestCase):
 
     def test_policy(self) -> None:
         """TODO: Doku."""
-        self.iptables.add_policy(Chain.FORWARD, Target.ACCEPT)
+        self.iptables.add_policy(Chain.FORWARD, PolicyTarget.ACCEPT)
 
     def test_chain(self) -> None:
         """TODO: Doku."""
-        self.iptables.add_chain("PORTSCAN")
-        self.iptables.delete_chain("PORTSCAN")
+        self.iptables.add_chain(Chain.PORTSCAN)
+        self.iptables.delete_chain(Chain.PORTSCAN)
 
     def test_append(self) -> None:
         """TODO: Doku."""
-        self.iptables.add_chain("PORTSCAN")
+        self.iptables.add_chain(Chain.PORTSCAN)
         self.iptables.add_append(Chain.PORTSCAN, "-i lo -j ACCEPT")
-        self.iptables.flush("PORTSCAN")
+        self.iptables.flush_chain(Chain.PORTSCAN)
 
     def test_status(self) -> None:
         """TODO: Doku."""
