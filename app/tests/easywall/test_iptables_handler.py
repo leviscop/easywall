@@ -27,8 +27,8 @@ class TestIPTablesHandler(unittest.TestCase):
 
     def test_chain(self) -> None:
         """TODO: Doku."""
-        self.iptables.add_chain(Chain.PORTSCAN)
-        self.iptables.delete_chain(Chain.PORTSCAN)
+        self.iptables.add_chain(Chain.PORTSCAN.value)
+        self.iptables.delete_chain(Chain.PORTSCAN.value)
 
     def test_append(self) -> None:
         """TODO: Doku."""
