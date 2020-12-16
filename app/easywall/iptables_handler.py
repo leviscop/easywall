@@ -228,7 +228,7 @@ class Iptables:
             else:
                 debug("all iptables chains deleted")
         else:
-            details = f"Code: {cmd.code} | Err: {cmd.err}"
+            details = f"Code: {cmd.code} | Err: {cmd.err} | Chain: {chain}"
             if chain != "":
                 warning(f"iptables chain {chain} could not be deleted. {details}")
             else:
