@@ -5,7 +5,7 @@ services:
     build:
       context: .
     container_name: easywall
-    restart: on-failure
+    restart: "no"
     ports: 
       - "12227:12227"
     network_mode: host
