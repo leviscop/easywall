@@ -113,10 +113,11 @@ class Iptables:
 
     def add_chain(self, chain: Union[Chain, str]) -> None:
         """Create a new custom chain in iptables."""
-        if Chain.has_value(chain):
-            chain_str = chain
-        else:
+        try:
             chain_str = chain.value
+        except AttributeError:
+            chain_str = chain
+
         option = "-N"
 
         execute_os_command("{} {} {}".format(self.iptables_bin, option, chain_str))
@@ -129,10 +130,11 @@ class Iptables:
                    onlyv6: bool = False, onlyv4: bool = False, table: Table = Table.FILTER) -> None:
         """Create a new append in iptables."""
         table_value = table.value
-        if Chain.has_value(chain):
-            chain_value = chain
-        else:
+        try:
             chain_value = chain.value
+        except AttributeError:
+            chain_value = chain
+
         option = "-A"
 
         if table_value != "":
@@ -155,10 +157,10 @@ class Iptables:
                onlyv6: bool = False, onlyv4: bool = False, table: Table = Table.FILTER) -> None:
         """TODO: Doku."""
         table_value = table.value
-        if Chain.has_value(chain):
-            chain_value = chain
-        else:
+        try:
             chain_value = chain.value
+        except AttributeError:
+            chain_value = chain
         option = "-I"
 
         if table_value != "":
@@ -194,10 +196,10 @@ class Iptables:
 
     def flush_chain(self, table: Table, chain: Union[Chain, str]) -> None:
         table_str = table.value
-        if Chain.has_value(chain):
-            chain_str = chain
-        else:
+        try:
             chain_str = chain.value
+        except AttributeError:
+            chain_str = chain
         # Flush but keep Docker rules
         cmd = execute_os_command(f"{self.iptables_bin} -t {table_str} -L {chain_str} | tail -n+3")
         if not cmd.successful:
@@ -233,10 +235,10 @@ class Iptables:
 
     def delete_chain(self, chain: Union[Chain, str] = Chain.INPUT.value) -> None:
         """Delete a chain or all chains in iptables firewall."""
-        if Chain.has_value(chain):
-            chain_str = chain
-        else:
+        try:
             chain_str = chain.value
+        except AttributeError:
+            chain_str = chain
         self.__delete_chain(chain_str, self.iptables_bin)
         if self.ipv6 is True:
             self.__delete_chain(chain_str, self.ip6tables_bin)
