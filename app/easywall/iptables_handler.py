@@ -10,13 +10,19 @@ from easywall.utility import (create_file_if_not_exists,
                               file_get_contents)
 
 
-class PolicyTarget(Enum):
+class IptablesEnum(Enum):
+    @classmethod
+    def __contains__(cls, item):
+        return item in cls._value2member_map_
+
+
+class PolicyTarget(IptablesEnum):
     """iptables's available targets for policies."""
     ACCEPT = "ACCEPT"
     DROP = "DROP"
 
 
-class Target(Enum):
+class Target(IptablesEnum):
     """iptables's default targets."""
     ACCEPT = "ACCEPT"
     DROP = "DROP"
@@ -28,7 +34,7 @@ class Target(Enum):
     MARK = "MARK"
 
 
-class DefaultChain(Enum):
+class DefaultChain(IptablesEnum):
     """iptables's default chains provided by easywall"""
     INPUT = "INPUT"
     FORWARD = "FORWARD"
@@ -36,12 +42,8 @@ class DefaultChain(Enum):
     PREROUTING = "PREROUTING"
     POSTROUTING = "PREROUTING"
 
-    @classmethod
-    def has_value(cls, value):
-        return value in cls._value2member_map_
 
-
-class Chain(Enum):
+class Chain(IptablesEnum):
     """iptables's default and custom chains provided by easywall"""
     INPUT = "INPUT"
     FORWARD = "FORWARD"
@@ -53,7 +55,8 @@ class Chain(Enum):
     PORTSCAN = "PORTSCAN"
     ICMPFLOOD = "ICMPFLOOD"
 
-class Table(Enum):
+
+class Table(IptablesEnum):
     """iptables's tables."""
     FILTER = "filter"
     NAT = "nat"
@@ -111,7 +114,7 @@ class Iptables:
     def add_chain(self, chain: Union[Chain, str]) -> None:
         """Create a new custom chain in iptables."""
         chain_str = chain
-        if chain is Chain:
+        if chain is not str:
             chain_str = chain.value
         option = "-N"
 
@@ -126,7 +129,7 @@ class Iptables:
         """Create a new append in iptables."""
         table_value = table.value
         chain_value = chain
-        if chain is Chain:
+        if chain is not str:
             chain_value = chain.value
         option = "-A"
 
@@ -151,7 +154,7 @@ class Iptables:
         """TODO: Doku."""
         table_value = table.value
         chain_value = chain
-        if chain is Chain:
+        if chain is not str:
             chain_value = chain.value
         option = "-I"
 
@@ -189,7 +192,7 @@ class Iptables:
     def flush_chain(self, table: Table, chain: Union[Chain, str]) -> None:
         table_str = table.value
         chain_str = chain.value
-        if chain is Chain:
+        if chain is not str:
             chain_str = chain.value
         # Flush but keep Docker rules
         cmd = execute_os_command(f"{self.iptables_bin} -t {table_str} -L {chain_str} | tail -n+3")
@@ -227,7 +230,7 @@ class Iptables:
     def delete_chain(self, chain: Union[Chain, str] = Chain.INPUT.value) -> None:
         """Delete a chain or all chains in iptables firewall."""
         chain_str = chain
-        if chain is Chain:
+        if chain is not str:
             chain_str = chain.value
         self.__delete_chain(chain_str, self.iptables_bin)
         if self.ipv6 is True:
