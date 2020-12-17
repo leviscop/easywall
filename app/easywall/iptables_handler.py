@@ -98,7 +98,7 @@ class Iptables:
         Returns:
             True if the policy was applied, False if not.
         """
-        if not DefaultChain.has_value(chain):
+        if not DefaultChain.has_value(chain.value):
             error(f"unable to apply policy to non default chain {chain.value}")
             return False
         option = "-P"
