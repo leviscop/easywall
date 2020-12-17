@@ -2,6 +2,7 @@
 the module contains functions for the apply rules route
 """
 from datetime import datetime
+from time import sleep
 
 from flask import render_template, request
 from easywall.utility import create_file_if_not_exists, write_into_file
@@ -47,6 +48,15 @@ def apply_save() -> str:
                 step = 3
         return apply(True, step)
     return login()
+
+
+def apply_forceful() -> None:
+    apply_step_one()
+    write_into_file(".acceptance", "true")
+    sleep(10)
+    filename = ".acceptance_status"
+    create_file_if_not_exists(filename)
+    write_into_file(filename, "accepted")
 
 
 def apply_step_one() -> None:

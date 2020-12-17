@@ -1,5 +1,4 @@
 """The app module contains all information of the Flask app."""
-import os
 from datetime import datetime, timezone
 from logging import info, warning
 from typing import Tuple, Union
@@ -11,7 +10,8 @@ from werkzeug.wrappers import Response
 from easywall.config import Config
 from easywall.log import Log
 from easywall.rules_handler import RulesHandler
-from easywall.web.apply import apply, apply_save
+from easywall.utility import execute_os_command
+from easywall.web.apply import apply, apply_save, apply_forceful
 from easywall.web.blacklist import blacklist, blacklist_save
 from easywall.web.custom import custom, custom_save
 from easywall.web.error import forbidden, page_not_found
@@ -20,7 +20,7 @@ from easywall.web.forwarding import forwarding, forwarding_save
 from easywall.web.index import index
 from easywall.web.login import login_post, logout
 from easywall.web.options import options, options_save
-from easywall.web.ports import ports, ports_save
+from easywall.web.ports import ports, ports_save, add_port
 from easywall.web.webutils import Webutils
 from easywall.web.whitelist import whitelist, whitelist_save
 
@@ -249,6 +249,7 @@ class Main(object):
         info("starting easywall-web")
 
         self.cfg = Config(CONFIG_PATH)
+        self.open_web_port()
 
         if debug is True:
             info("loading Flask debug configuration")
@@ -256,7 +257,9 @@ class Main(object):
         else:
             info("loading Flask production configuration")
             if self.cfg.get_value("uwsgi", "http-socket") != "":
-                warning("Running server through HTTP. This is not recommended nor safe unless running behind a trusted reverse proxy.")
+                warn = ("Running server through HTTP. This is not recommended nor"
+                        " safe unless running behind a trusted reverse proxy.")
+                warning(warn)
                 APP.config.from_object('easywall.web.__main__.ProductionConfig')
             else:
                 APP.config.from_object('easywall.web.__main__.ProductionConfigSecure')
@@ -274,6 +277,13 @@ class Main(object):
         port = self.cfg.get_value("WEB", "bindport")
         host = self.cfg.get_value("WEB", "bindip")
         APP.run(str(host), str(port))
+
+    @staticmethod
+    def open_web_port():
+        running_port = execute_os_command("ss -tpan | grep uwsgi | xargs | cut -d ' ' -f4 | cut -d ':' -f2").output
+        entry: dict = {"ruletype": "tcp", "port": running_port, "description": "easywall-web", "ssh": False}
+        if add_port(entry):
+            apply_forceful()
 
 
 if __name__ == '__main__':

@@ -6,11 +6,10 @@ from easywall.acceptance import Acceptance
 from easywall.config import Config
 from easywall.iptables_handler import Table, Chain, Iptables, PolicyTarget
 from easywall.rules_handler import RulesHandler
-from easywall.utility import file_exists, rename_file, execute_os_command
-from easywall.web.webutils import Webutils
+from easywall.utility import file_exists, rename_file
 
 
-class Easywall():
+class Easywall:
     """
     the class contains the main functions for the easywall core
     such as applying a new configuration or listening on rule file changes
@@ -60,9 +59,6 @@ class Easywall():
         self.iptables.add_append(
             Chain.INPUT, "-m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT")
 
-        # accept connections to running port (and saved port if not equal)
-        self.open_web_port()
-
         # Block remote packets claiming to be from a loopback address.
         self.iptables.add_append(Chain.INPUT, "-s 127.0.0.0/8 ! -i lo -j DROP", False, True)
         self.iptables.add_append(Chain.INPUT, "-s ::1/128 ! -i lo -j DROP", True)
@@ -109,18 +105,6 @@ class Easywall():
                 Chain.INPUT,
                 "-m limit --limit {}/minute -j LOG --log-prefix \"easywall blocked: \"".
                 format(self.cfg.get_value("IPTABLES", "log_blocked_connections_log_limit")))
-
-    def open_web_port(self):
-        running_port = execute_os_command("ss -tpan | grep uwsgi | xargs | cut -d ' ' -f4 | cut -d ':' -f2").output
-        web = Webutils()
-        if web.cfg.get_value("uwsgi", "https-socket") != "":
-            saved_port = web.cfg.get_value("uwsgi", "https-socket").split(",")[0].split(":")[1]
-        else:
-            saved_port = web.cfg.get_value("uwsgi", "http-socket").split(":")[1]
-
-        self.iptables.add_append(Chain.INPUT, f"-p tcp --dport {running_port}")
-        if running_port != saved_port:
-            self.iptables.add_append(Chain.INPUT, f"-p tcp --dport {saved_port}")
 
     def apply_forwarding(self) -> None:
         """TODO: Doku."""

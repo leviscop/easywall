@@ -55,16 +55,7 @@ class Main():
         self.observer = Observer()
         self.stop_flag = False
 
-        info("restoring saved rules...")
-        self.apply_rules_on_start()
-
         info("easywall has been started")
-
-    def apply_rules_on_start(self):
-        
-        write_into_file(self.easywall.acceptance.filename, "true")
-        #self.easywall.save() # TODO: must be restored when capturing stop signal
-        self.easywall.apply()
 
     def apply(self, filename: str) -> None:
         """TODO: Doku."""
