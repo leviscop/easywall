@@ -113,8 +113,9 @@ class Iptables:
 
     def add_chain(self, chain: Union[Chain, str]) -> None:
         """Create a new custom chain in iptables."""
-        chain_str = chain
-        if chain is not str:
+        if Chain.has_value(chain):
+            chain_str = chain
+        else:
             chain_str = chain.value
         option = "-N"
 
@@ -128,8 +129,9 @@ class Iptables:
                    onlyv6: bool = False, onlyv4: bool = False, table: Table = Table.FILTER) -> None:
         """Create a new append in iptables."""
         table_value = table.value
-        chain_value = chain
-        if chain is not str:
+        if Chain.has_value(chain):
+            chain_value = chain
+        else:
             chain_value = chain.value
         option = "-A"
 
@@ -153,8 +155,9 @@ class Iptables:
                onlyv6: bool = False, onlyv4: bool = False, table: Table = Table.FILTER) -> None:
         """TODO: Doku."""
         table_value = table.value
-        chain_value = chain
-        if chain is not str:
+        if Chain.has_value(chain):
+            chain_value = chain
+        else:
             chain_value = chain.value
         option = "-I"
 
@@ -191,8 +194,9 @@ class Iptables:
 
     def flush_chain(self, table: Table, chain: Union[Chain, str]) -> None:
         table_str = table.value
-        chain_str = chain.value
-        if chain is not str:
+        if Chain.has_value(chain):
+            chain_str = chain
+        else:
             chain_str = chain.value
         # Flush but keep Docker rules
         cmd = execute_os_command(f"{self.iptables_bin} -t {table_str} -L {chain_str} | tail -n+3")
@@ -229,8 +233,9 @@ class Iptables:
 
     def delete_chain(self, chain: Union[Chain, str] = Chain.INPUT.value) -> None:
         """Delete a chain or all chains in iptables firewall."""
-        chain_str = chain
-        if chain is not str:
+        if Chain.has_value(chain):
+            chain_str = chain
+        else:
             chain_str = chain.value
         self.__delete_chain(chain_str, self.iptables_bin)
         if self.ipv6 is True:
