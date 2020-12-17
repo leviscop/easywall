@@ -12,7 +12,7 @@ from easywall.utility import (create_file_if_not_exists,
 
 class IptablesEnum(Enum):
     @classmethod
-    def __contains__(cls, item):
+    def has_value(cls, item):
         return item in cls._value2member_map_
 
 
