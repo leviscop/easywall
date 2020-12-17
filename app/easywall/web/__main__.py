@@ -216,6 +216,7 @@ class DefaultConfig(object):
 class ProductionConfigSecure(DefaultConfig):
     """TODO: Doku."""
 
+
 class ProductionConfig(DefaultConfig):
     """TODO: Doku."""
 
@@ -223,12 +224,14 @@ class ProductionConfig(DefaultConfig):
     SESSION_COOKIE_HTTPONLY = False
     PREFERRED_URL_SCHEME = "http"
 
+
 class DevelopmentConfig(ProductionConfig):
     """TODO: Doku."""
 
     DEBUG = True
     TESTING = True
     ENV = "development"
+
 
 class Main(object):
     """TODO: Doku."""

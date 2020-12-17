@@ -7,6 +7,8 @@ from easywall.config import Config
 from easywall.iptables_handler import Table, Chain, Iptables, PolicyTarget
 from easywall.rules_handler import RulesHandler
 from easywall.utility import file_exists, rename_file, execute_os_command
+from easywall.web.webutils import Webutils
+
 
 class Easywall():
     """
@@ -68,7 +70,7 @@ class Easywall():
         # Apply ICMP Rules
         self.apply_icmp()
 
-        # forewarded ports
+        # forwarded ports
         self.apply_forwarding()
 
         # SSH Brute Force Prevention
@@ -110,10 +112,11 @@ class Easywall():
 
     def open_web_port(self):
         running_port = execute_os_command("ss -tpan | grep uwsgi | xargs | cut -d ' ' -f4 | cut -d ':' -f2").output
-        try:
-            saved_port = self.cfg.get_value("uwsgi", "https-socket").split(",")[0].split(":")[1]
-        except Exception:
-            saved_port = self.cfg.get_value("uwsgi", "http-socket").split(":")[1]
+        web = Webutils()
+        if web.cfg.get_value("uwsgi", "https-socket") != "":
+            saved_port = web.cfg.get_value("uwsgi", "https-socket").split(",")[0].split(":")[1]
+        else:
+            saved_port = web.cfg.get_value("uwsgi", "http-socket").split(":")[1]
 
         self.iptables.add_append(Chain.INPUT, f"-p tcp --dport {running_port}")
         if running_port != saved_port:
