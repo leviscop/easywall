@@ -23,7 +23,7 @@ function run {
     $WEB_PATH/easywall_web.sh
 }
 
-flag_file="$EXPORTED_PATH/times_ran"
+flag_file="$EXPORTED_PATH/.times_ran"
 count=1
 if [ ! -f "$flag_file" ]; then
     install
