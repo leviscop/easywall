@@ -1,20 +1,24 @@
-# Guide
+# Installation
 
-## Dockerfile
+Here's how to run Easywall inside a docker container.
 
-This container is based on the official [python's docker image](https://hub.docker.com/_/python) `python:3.9-buster`.
+## Docker Hub
 
-All dependencies are installed at build time, and all source files are copied to `INSTALL_PATH`. Nonetheless, the `docker-entrypoint.sh` script still does a thing or two depending of whether it is the first run or not. If it's the first time, it will run the `install-core.sh` and `install-web.sh` files, which will set up, among other things, the HTTPS or HTTP server, depending of the presence/absence of the SSL files required to deploy a HTTPS server.
+*Planned*
 
-## Docker compose
+## Github repository
 
-The `docker-compose.yml` file is pretty self explanatory and includes some useful comments. However, the following table aims to clarify some aspects about the options chosen to run the container:
+1. Checkout the `docker` branch to obtain the most recent stable version:
+    ```
+    git clone --single-branch --branch docker https://github.com/joseantmazonsb/easywall.git
+    ```
+    Or checkout or download any other `docker` [release](https://github.com/joseantmazonsb/easywall/releases) (they are tagged as `vX.X.X-docker`).
 
-| Option | Explanation |
-|-|-|
-| `network_mode: host` | In order to apply the iptables rules inside the host, we need to run the container using this network mode. |
-| `NET_ADMIN` | Capability needed to interact with the network stack. |
-| `NET_RAW` | Capability needed to perform operations related to network packages at kernel level. |
+2. Use `docker-compose` to build and run the container:
+    ```
+	cd ./easywall
+    docker-compose up -d
+    ```
 
 # Expected behaviour
 
@@ -24,8 +28,55 @@ Moreover, you will be able to see the firewall rules from the host via `iptables
 
 *Note: the port running the easywall's web GUI will always be automatically open on start, and its tagged as `easywall-web`.*
 
+# Security concerns
+
+The docker approach lets you choose whether to start the web server with SSL features enabled or not.
+
+## Running a HTTPS server inside the container
+
+By default, the container will only run a HTTPS server if a SSL certificate and key are provided within the `docker-compose.yaml` file. You will need to mount both files as volumes the first time you run `docker-compose up` if you want a HTTPS server deployed by default. However, if you don't, you still can switch to HTTPS directly from the web GUI, via `Options -> Webinterface`.
+
+The SSL files must be placed inside the container under `/ssl`, and the certficate must be named `easywall.crt`, while the private key must be named `easywall.key`.
+
+## Reverse proxy
+
+If you already have a main web server running in another machine with SSL features enabled, and you would like to reuse it, then the reverse proxy's approach is your best option.
+
+To set up a secure reverse proxy using Apache2 you will only need to create a configuration file for the virtual host as follows:
+
+```apache
+<VirtualHost *:443>
+	ServerName easywall.example.com
+	ServerAlias easywall.example.com
+	ServerAdmin hostmaster@example.com
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+	ProxyPreserveHost On
+	ProxyPass / http://10.0.0.99:12227/
+	ProxyPassReverse / http://10.0.0.99:12227/
+
+	SSLEngine on
+	SSLCertificateFile /certs/fullchain
+	SSLCertificateKeyFile /certs/privkey
+</VirtualHost>
+```
+
+And, of course, you will need to edit this template to fit your own scenario.
+
+# Logging
+
+By default, Easywall logs to `/var/log/easywall.log` inside the container. So, you could create a log file and mount it as a volume pointing to `/var/log/easywall.log`, and you would then be able to access Easywall's logs directly from the host.
+
+Moreover, you may also call `docker logs <container_name>` to check the logs from the current execution.
+
 # Known issues
 
-- Running other containers will **slightly** affect your iptables rules, since docker will automatically add rules when starting a container.
+## I switched from HTTPS to HTTP and I can no longer log in
 
-- It is possible that easywall rules are not displayed by running `iptables` directly from the host. If that ever happens, running the command inside the container (`docker exec iptables <options>`) should display the rules.
+This is a cookie 'issue'. You will need to remove all easywall cookies from your browser and it should be working as expected again.
+
+## I can't see my rules
+
+It is possible that easywall rules are not displayed by running `iptables` directly from the host. If that ever happens, running the command inside the container (`docker exec iptables <options>`) should display them.
