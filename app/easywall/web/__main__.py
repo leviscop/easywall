@@ -239,13 +239,6 @@ class Main:
 
     def __init__(self, debug_mode: bool = False) -> None:
         """TODO: Doku."""
-        flag_file = f"{INSTALL_PATH}/.web-started"
-        if os.path.isfile(flag_file):
-            warning("easywall-web is already started!")
-            debug(f"| Call stack: {stack()}")
-            return
-
-        create_file_if_not_exists(flag_file)
 
         self.cfg_log = Config(LOG_CONFIG_PATH)
         loglevel = self.cfg_log.get_value("LOG", "level")
@@ -254,6 +247,9 @@ class Main:
         logpath = self.cfg_log.get_value("LOG", "filepath")
         logfile = self.cfg_log.get_value("LOG", "filename")
         self.log = Log(str(loglevel), bool(to_stdout), bool(to_files), str(logpath), str(logfile))
+
+        if is_already_started():
+            return
 
         info("starting easywall-web")
 
@@ -288,6 +284,16 @@ class Main:
         port = self.cfg.get_value("WEB", "bindport")
         host = self.cfg.get_value("WEB", "bindip")
         APP.run(str(host), str(port))
+
+
+def is_already_started() -> bool:
+    flag_file = f"{INSTALL_PATH}/.web-started"
+    if os.path.isfile(flag_file):
+        warning("easywall-web is already started!")
+        debug(f"| Call stack: {stack()}")
+        return True
+    create_file_if_not_exists(flag_file)
+    return False
 
 
 def load_rules():
