@@ -22,6 +22,10 @@ The container will load all rules from the file `rules.yml` when it is started, 
 
 Moreover, you will be able to see the firewall rules from the host via `iptables -L`, although you can also use `docker exec <container_name> <command>` to execute all sort of commands inside the container.
 
+*Note: the port running the easywall's web GUI will always be automatically open on start, and its tagged as `easywall-web`.*
+
 # Known issues
 
 - Running other containers will **slightly** affect your iptables rules, since docker will automatically add rules when starting a container.
+
+- It is possible that easywall rules are not displayed by running `iptables` directly from the host. If that ever happens, running the command inside the container (`docker exec iptables <options>`) should display the rules.
