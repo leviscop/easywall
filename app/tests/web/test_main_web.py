@@ -19,4 +19,4 @@ class TestMain(unittest.TestCase):
     def test_init(self) -> None:
         """TODO: Doku."""
         from easywall.web.__main__ import Main
-        Main(debug=False)
+        Main(debug_mode=False)

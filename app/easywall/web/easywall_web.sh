@@ -32,7 +32,9 @@ while true; do
     esac
 done
 
+rm "${INSTALL_PATH}/.web-started"
 if [[ $DEBUG == true ]]; then
+    echo -e "\e[33mStarting easywall.web in DEBUG mode...\e[39m"
     /usr/bin/env python3 -m easywall.web
 else
     uwsgi ${INSTALL_PATH}/config/web.ini

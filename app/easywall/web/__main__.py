@@ -1,8 +1,9 @@
 """The app module contains all information of the Flask app."""
 from datetime import datetime, timezone
-from logging import info, warning
+from inspect import stack
+from logging import info, warning, debug
+from time import sleep
 from typing import Tuple, Union
-
 from flask import Flask, wrappers
 from flask_ipban import IpBan
 from werkzeug.wrappers import Response
@@ -10,7 +11,7 @@ from werkzeug.wrappers import Response
 from easywall.config import Config
 from easywall.log import Log
 from easywall.rules_handler import RulesHandler
-from easywall.utility import execute_os_command
+from easywall.utility import execute_os_command, create_file_if_not_exists
 from easywall.web.apply import apply, apply_save, apply_forceful
 from easywall.web.blacklist import blacklist, blacklist_save
 from easywall.web.custom import custom, custom_save
@@ -233,11 +234,19 @@ class DevelopmentConfig(ProductionConfig):
     ENV = "development"
 
 
-class Main(object):
+class Main:
     """TODO: Doku."""
 
-    def __init__(self, debug: bool = False) -> None:
+    def __init__(self, debug_mode: bool = False) -> None:
         """TODO: Doku."""
+        flag_file = f"{INSTALL_PATH}/.web-started"
+        if os.path.isfile(flag_file):
+            warning("easywall-web is already started!")
+            debug(f"| Call stack: {stack()}")
+            return
+
+        create_file_if_not_exists(flag_file)
+
         self.cfg_log = Config(LOG_CONFIG_PATH)
         loglevel = self.cfg_log.get_value("LOG", "level")
         to_stdout = self.cfg_log.get_value("LOG", "to_stdout")
@@ -250,7 +259,7 @@ class Main(object):
 
         self.cfg = Config(CONFIG_PATH)
 
-        if debug is True:
+        if debug_mode is True:
             info("loading Flask debug configuration")
             APP.config.from_object('easywall.web.__main__.DevelopmentConfig')
         else:
@@ -270,6 +279,7 @@ class Main(object):
         self.ip_ban = IpBan(app=APP, ban_count=self.login_attempts,
                             ban_seconds=self.login_bantime, ipc=True)
         self.ip_ban.url_pattern_add('^/static.*$', match_type='regex')
+
         info("loading iptables rules...")
         load_rules()
 
@@ -298,8 +308,8 @@ def open_web_port() -> bool:
     return True
 
 
-if __name__ == '__main__':
-    MAIN = Main(debug=True)
+if __name__ == "__main__":
+    MAIN = Main(debug_mode=True)
     MAIN.run_debug()
 else:
     MAIN = Main()

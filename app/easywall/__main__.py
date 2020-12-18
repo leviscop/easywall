@@ -9,7 +9,7 @@ from watchdog.observers import Observer
 from easywall.config import Config
 from easywall.easywall import Easywall
 from easywall.log import Log
-from easywall.utility import delete_file_if_exists, write_into_file
+from easywall.utility import delete_file_if_exists
 
 import os
 
