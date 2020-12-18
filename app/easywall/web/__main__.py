@@ -249,7 +249,6 @@ class Main(object):
         info("starting easywall-web")
 
         self.cfg = Config(CONFIG_PATH)
-        self.open_web_port()
 
         if debug is True:
             info("loading Flask debug configuration")
@@ -271,6 +270,8 @@ class Main(object):
         self.ip_ban = IpBan(app=APP, ban_count=self.login_attempts,
                             ban_seconds=self.login_bantime, ipc=True)
         self.ip_ban.url_pattern_add('^/static.*$', match_type='regex')
+        info("loading iptables rules...")
+        load_rules()
 
     def run_debug(self) -> None:
         """TODO: Doku."""
@@ -278,12 +279,23 @@ class Main(object):
         host = self.cfg.get_value("WEB", "bindip")
         APP.run(str(host), str(port))
 
-    @staticmethod
-    def open_web_port():
-        running_port = execute_os_command("ss -tpan | grep uwsgi | xargs | cut -d ' ' -f4 | cut -d ':' -f2").output
-        entry: dict = {"ruletype": "tcp", "port": running_port, "description": "easywall-web", "ssh": False}
-        if add_port(entry):
-            apply_forceful()
+
+def load_rules():
+    open_web_port()
+    apply_forceful()
+
+
+def open_web_port() -> bool:
+    running_port = execute_os_command("ss -tpan | grep uwsgi | xargs | cut -d ' ' -f4 | cut -d ':' -f2").output.strip()
+    entry: dict = {"ruletype": "tcp", "port": running_port, "description": "easywall-web", "ssh": False}
+    added = add_port(entry)
+    if not added:
+        return False
+    # Remove previous easywall-web rule (if any)
+    for rule in RulesHandler().rules["current"]["tcp"]:
+        if rule["description"] == "easywall-web" and rule["port"] != running_port:
+            del rule
+    return True
 
 
 if __name__ == '__main__':

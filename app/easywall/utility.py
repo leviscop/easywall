@@ -1,6 +1,7 @@
 """TODO: Doku."""
 from csv import reader
 from datetime import datetime
+from hashlib import sha512
 from io import StringIO
 from math import floor
 from os import R_OK, access, chmod, makedirs, path, remove, rename
@@ -189,6 +190,18 @@ def time_duration_diff(date1: datetime, date2: datetime) -> str:
         result = "{} {}{}".format(number_of_units, text, ending)
 
     return result
+
+# -------------------------
+# Crypto
+
+
+def generate_salt():
+    source = execute_os_command("ip link | tail +4 | head -1 | xargs | cut -d ' ' -f2").output
+    return sha512(source.encode("utf-8")).hexdigest()
+
+
+def generate_hash(salt: str, pwd: str):
+    return sha512((salt + pwd).encode("utf-8")).hexdigest()
 
 # -------------------------
 # System Operations

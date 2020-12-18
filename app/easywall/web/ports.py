@@ -37,11 +37,7 @@ def ports_save() -> str:
     if utils.check_login(request) is True:
         action = "add"
 
-        entry: dict = {}
-        entry["ruletype"] = "tcp"
-        entry["port"] = ""
-        entry["description"] = ""
-        entry["ssh"] = False
+        entry: dict = {"ruletype": "tcp", "port": "", "description": "", "ssh": False}
 
         for key, value in request.form.items():
             if key == "remove":
@@ -59,7 +55,6 @@ def ports_save() -> str:
             else:
                 entry["port"] = key
 
-        result = True
         if action == "add":
             result = add_port(entry)
         else:

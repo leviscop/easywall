@@ -2,6 +2,7 @@
 the module contains functions for the apply rules route
 """
 from datetime import datetime
+from threading import Thread
 from time import sleep
 
 from flask import render_template, request
@@ -51,12 +52,9 @@ def apply_save() -> str:
 
 
 def apply_forceful() -> None:
+    Thread(target=lambda: (sleep(5), create_file_if_not_exists(".acceptance"), write_into_file(".acceptance", "true")))\
+        .start()
     apply_step_one()
-    write_into_file(".acceptance", "true")
-    sleep(10)
-    filename = ".acceptance_status"
-    create_file_if_not_exists(filename)
-    write_into_file(filename, "accepted")
 
 
 def apply_step_one() -> None:

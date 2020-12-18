@@ -1,13 +1,12 @@
 """Create functions for user login and logout."""
-import hashlib
-import platform
-from logging import info, warning
+from logging import info, warning, debug
 from typing import Union
 
 from flask import redirect, render_template, request, session
 from flask_ipban import IpBan
 from werkzeug.wrappers import Response
 
+from easywall.utility import generate_hash, generate_salt
 from easywall.web.webutils import Webutils
 
 
@@ -34,13 +33,12 @@ def login_post(ip_ban: IpBan) -> Union[Response, str]:
     a session variable is set to store the login information
     """
     utils = Webutils()
-    hostname = platform.node().encode("utf-8")
-    salt = hashlib.sha512(hostname).hexdigest()
-    pw_hash = hashlib.sha512(
-        str(salt + request.form['password']).encode("utf-8")).hexdigest()
+    salt = generate_salt()
+    pw_hash = generate_hash(salt, request.form['password'])
+    stored_pwd = utils.cfg.get_value("WEB", "password")
+    debug(f"presented pass: {pw_hash} | stored pass: {stored_pwd}")
     if request.form['username'] == utils.cfg.get_value(
-            "WEB", "username") and pw_hash == utils.cfg.get_value(
-                "WEB", "password"):
+            "WEB", "username") and pw_hash == stored_pwd:
         session.clear()
         session['logged_in'] = True
         session['ip_address'] = request.remote_addr

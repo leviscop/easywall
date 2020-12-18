@@ -1,11 +1,10 @@
 """TODO: Doku."""
-from hashlib import sha512
-from platform import node
 from typing import Union
 
 from flask import redirect, render_template, request
 from werkzeug.wrappers import Response
 
+from easywall.utility import generate_salt, generate_hash
 from easywall.web.login import login
 from easywall.web.webutils import Webutils
 
@@ -36,9 +35,8 @@ def firstrun_save() -> Union[Response, str]:
         return firstrun("The passwords are not the same. Please try again.", "danger")
     try:
         utils.cfg.set_value("WEB", "username", username)
-        hostname = node().encode("utf-8")
-        salt = sha512(hostname).hexdigest()
-        pw_hash = sha512(str(salt + password).encode("utf-8")).hexdigest()
+        salt = generate_salt()
+        pw_hash = generate_hash(salt, password)
         utils.cfg.set_value("WEB", "password", pw_hash)
         return login("Username and password have been successfully saved. "
                      "Please log in now with your access data.", "success")
