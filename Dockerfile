@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 RUN ln -fs /usr/share/zoneinfo/Europe/Amsterdam /etc/localtime
-RUN apt-get -qq update && DEBIAN_FRONTEND=noninteractive apt-get -qq install --no-install-recommends python3 python3-dev python3-pip git uwsgi uwsgi-plugin-python3 iptables wget unzip
+RUN apt-get -qq update && DEBIAN_FRONTEND=noninteractive apt-get -qq install --no-install-recommends python3 python3-pip git uwsgi uwsgi-plugin-python3 iptables wget unzip
 RUN pip3 install --no-cache-dir --upgrade pydoc-markdown mkdocs
 RUN pip3 install --no-cache-dir setuptools wheel
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
