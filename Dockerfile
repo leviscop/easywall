@@ -1,7 +1,8 @@
-FROM python:3.9-buster
-RUN apt-get -qq update && apt-get -qq install git uwsgi uwsgi-plugin-python3 iptables
-RUN pip3 install --upgrade pydoc-markdown mkdocs
-RUN pip3 install setuptools wheel
+FROM ubuntu:latest
+RUN apt -y update && apt -y install --no-install-recommends python3 python3-dev python3-pip git uwsgi uwsgi-plugin-python3 iptables wget unzip
+RUN pip3 install --no-cache-dir --upgrade pydoc-markdown mkdocs
+RUN pip3 install --no-cache-dir setuptools wheel
+RUN apt clean && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd easywall
 RUN adduser --system --debug easywall
@@ -40,7 +41,7 @@ RUN mv "/tmp/js/"* "easywall/web/static/js"
 RUN mv "/tmp/fonts/"* "easywall/web/static/fonts"
 RUN rm -rf "/tmp"
 
-RUN pip3 install .
+RUN pip3 install --no-cache-dir .
 
 # Permissions
 RUN chown -Rv easywall:easywall .
